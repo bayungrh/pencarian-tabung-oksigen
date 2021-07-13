@@ -86,7 +86,7 @@ const MainComponent = (_) => {
             <Form.Field control={Select} placeholder='Pilih provinsi' search options={provinsiSource} className='mb-1 mr-1' onChange={changeProvinsi} width={3} />
             <Form.Field control={Select} placeholder='Pilih kota' search options={kotaSource} className='mb-1 mr-1' onChange={changekota} width={3} />
             <Form.Field control={Select} placeholder='Pilih kategori' search options={categorySource} className='mb-1 mr-1' onChange={changeCategory} width={3} />
-            <Form.Field control={Button} content='Cari' icon='linkify' primary onClick={fetchStore} />
+            <Form.Field control={Button} content='Cari' icon='search' primary onClick={fetchStore} />
           </Form.Group>
         </Form>
       </Container>
