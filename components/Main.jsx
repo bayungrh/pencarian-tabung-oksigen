@@ -82,7 +82,7 @@ const MainComponent = (_) => {
         </div>
         <Form className="centered">
           <Form.Group widths={12}>
-            <Form.Field content={Input} width={3}/>
+            <Form.Field width={3} />
             <Form.Field control={Select} placeholder='Pilih provinsi' search options={provinsiSource} className='mb-1 mr-1' onChange={changeProvinsi} width={3} />
             <Form.Field control={Select} placeholder='Pilih kota' search options={kotaSource} className='mb-1 mr-1' onChange={changekota} width={3} />
             <Form.Field control={Select} placeholder='Pilih kategori' search options={categorySource} className='mb-1 mr-1' onChange={changeCategory} width={3} />
@@ -112,9 +112,13 @@ const MainComponent = (_) => {
               <Card>
                 <Card.Content>
                   <Card.Header style={{ paddingBottom: '5px' }}> { store.store_name }</Card.Header>
-                  <Card.Meta>Phone: { store.contact_phone }</Card.Meta>
+                  <Card.Meta>Kontak: { store.contact_phone }</Card.Meta>
                   <Card.Description className="mt-2">
                     { store.address }
+                    { store.website && <>
+                        <p><br/><a href={store.website} target="_blank">{store.website}</a></p>
+                      </> 
+                    }
                   </Card.Description>
                   <Card.Description>
                   

@@ -32,28 +32,31 @@ handler.get((req, res) => {
       break;
   }
 
+  if (filterCategory) {
+    collection = collection.where('categories', 'array-contains', filterCategory);
+  }
+
   return collection
     .where('is_active', '==', true)
     .where('is_approved', '==', true)
     .get()
     .then((snapshot) => {
+      const rowCount = snapshot.size;
       const results = [];
       snapshot.forEach((snap) => {
         const data = snap.data();
-        if (filterCategory) {
-          if (!data.categories.includes(filterCategory)) return;
-        }
         results.push({
           ...data,
           id: snap.id
         })
       });
-      return results;
+      return [rowCount, results];
     }).then((result) => {
       res.json({
         statusCode: 200,
         message: 'OK',
-        data: result
+        rowCount: result[0],
+        data: result[1]
       });
     }).catch((err) => 
       res.status(500).json({

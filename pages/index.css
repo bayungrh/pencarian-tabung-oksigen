@@ -29,3 +29,5 @@ body {
 
 .dropdown { border-radius: 0px !important; }
 .button { border-radius: 0px !important; }
+
+.hiden { display: none; }
