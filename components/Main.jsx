@@ -77,8 +77,8 @@ const MainComponent = (_) => {
       <Container style={{ textAlign:'center', marginTop:'20px'} }>
         <div style={{ paddingBottom: '30px' }}>
           <Header as='h1' style={{ paddingBottom: '0', fontFamily: 'Poppins, sans-serif' }}>Pencarian Tabung Oksigen</Header>
-          <p style={{ fontSize: '11.5pt' }}>Informasi Pembalian/Penyewaan atau Isi Ulang Tabung Oksigen <br/> (silahkan pilih Provinsi dan Kota Anda untuk melakukan pencarian)</p>
-          <p>Bantu upload informasi Tabung melalui <a href="https://forms.gle/oENFrZRxJ6xsTSG79" target="_blank">Submit Data</a></p>
+          <p style={{ fontSize: '11.5pt' }}>Informasi Pembelian/Penyewaan atau Isi Ulang Tabung Oksigen <br/> (silahkan pilih Provinsi dan Kota Anda untuk melakukan pencarian)</p>
+          <p>Bantu unggah informasi Tabung melalui <a href="https://forms.gle/oENFrZRxJ6xsTSG79" target="_blank">Submit Data</a></p>
         </div>
         <Form className="centered">
           <Form.Group widths={12}>
