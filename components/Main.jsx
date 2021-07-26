@@ -1,5 +1,19 @@
 import { useState, useEffect } from "react";
-import { Segment, Image, Container, Header, Select, Form, Button, Card, Icon, Dimmer, Loader, Label, Input, Grid } from "semantic-ui-react";
+import { 
+  Segment, 
+  Image,
+  Container,
+  Header,
+  Select,
+  Form,
+  Button,
+  Card,
+  Icon,
+  Dimmer,
+  Loader,
+  Label,
+  Breadcrumb
+} from "semantic-ui-react";
 import rp from 'request-promise';
 
 const categorySource = [
@@ -14,9 +28,18 @@ const MainComponent = (_) => {
   const [notFound, setNotFound] = useState(false);
   const [provinsiSource, setProvinsiData] = useState([]);
   const [kotaSource, setKotaData] = useState([]);
-  const [provinsi, setProvinsi] = useState(0);
-  const [kota, setKota] = useState(0);
-  const [category, setCategory] = useState('all');
+  const defaultSelectedData = {
+    key: 0,
+    value: 0,
+    text: '--- Semua ---'
+  }
+  const [provinsi, setProvinsi] = useState(defaultSelectedData);
+  const [kota, setKota] = useState(defaultSelectedData);
+  const [category, setCategory] = useState({
+    key: 'all',
+    value: 'all',
+    text: '--- Semua ---'
+  });
   const [stores, setStores] = useState([]);
 
   const fetchProvinsi = async () => {
@@ -26,9 +49,10 @@ const MainComponent = (_) => {
       if (res && res.length > 0) {
         const dataProvinsi = res.map((i) => ({
           key: i.id,
-          value: i.id,
+          value: parseInt(i.id),
           text: i.nama
         }));
+        dataProvinsi.unshift(defaultSelectedData);
         setProvinsiData(dataProvinsi);
       }
     })
@@ -40,9 +64,10 @@ const MainComponent = (_) => {
     }).then((res) => {
       const dataKota = res.map((i) => ({
         key: i.id,
-        value: i.id,
+        value: parseInt(i.id),
         text: i.nama
       }));
+      dataKota.unshift(defaultSelectedData);
       setKotaData(dataKota);
     })
   }
@@ -51,7 +76,7 @@ const MainComponent = (_) => {
     const baseURI = process.env.NODE_ENV === 'production' ? 'https://info-tabung-oksigen.vercel.app' : 'http://localhost:5000';
     setLoading(true);
     setNotFound(false);
-    await rp.get(`${baseURI}/api/filter?provinsi=${provinsi}&kota=${kota}&category=${category}`, {
+    await rp.get(`${baseURI}/api/filter?provinsi=${provinsi.value}&kota=${kota.value}&category=${category.value}`, {
       json: true
     }).then((res) => {
       setStores(res.data);
@@ -59,13 +84,22 @@ const MainComponent = (_) => {
     }).finally(() => setLoading(false))
   }
 
+  const getSelected = (data) => data.options.find((i) => i.value === data.value);
+
   const changeProvinsi = (_, data) => {
-    setProvinsi(data.value);
-    setKota(0)
-    fetchKota(data.value);
+    setStores([]);
+    const selected = getSelected(data);
+    setProvinsi(selected);
+    setKota(defaultSelectedData)
+    if (data.value !== 0) {
+      fetchKota(selected.value);
+    }
   }
-  const changekota = (_, data) => setKota(data.value);
-  const changeCategory = (_, data) => setCategory(data.value);
+  const changekota = (_, data) => {
+    setStores([]);
+    setKota(getSelected(data))
+  }
+  const changeCategory = (_, data) => setCategory(getSelected(data));
 
   useEffect(() => {
     fetchProvinsi();
@@ -108,20 +142,29 @@ const MainComponent = (_) => {
           )}
 
           { stores && stores.length > 0 && stores.map((store) => {
+            let district;
+            if (kotaSource.length > 0) {
+              district = kotaSource.find((k) => k.value == store.city_id);
+            } else if (provinsiSource.length > 0) {
+              district = provinsiSource.find((k) => k.value == store.province_id);
+            }
+
+            const sections = [
+              // { key: provinsiText, content: provinsiText, link: true },
+              { key: district.text, content: district.text, link: true }
+            ]
             return (
               <Card>
                 <Card.Content>
                   <Card.Header style={{ paddingBottom: '5px' }}> { store.store_name }</Card.Header>
-                  <Card.Meta>Kontak: { store.contact_phone }</Card.Meta>
+                  <Breadcrumb divider='/' sections={sections} />
+                  <Card.Meta className="mt-1">Kontak: { store.contact_phone }</Card.Meta>
                   <Card.Description className="mt-2">
                     { store.address }
                     { store.website && <>
                         <p><br/><a href={store.website} target="_blank">{store.website}</a></p>
                       </> 
                     }
-                  </Card.Description>
-                  <Card.Description>
-                  
                   </Card.Description>
                 </Card.Content>
                 <Card.Content extra>
@@ -135,7 +178,6 @@ const MainComponent = (_) => {
                   </div>
                 </Card.Content>
                 <Segment>
-                  {/* <Label attached='bottom'>CSS</Label> */}
                   { store.categories && store.categories.map((category) => {
                     return (
                       <Label as='a'>
@@ -150,7 +192,7 @@ const MainComponent = (_) => {
         </Card.Group>
       </Container>
 
-      <Container style={{textAlign: 'center', marginTop: '100px', paddingBottom: '20px'}}>
+      <Container style={{textAlign: 'center', marginTop: '98px'}}>
         <p>Made with 🤍 by <a href="https://github.com/bayungrh" target="_blank">BayuN</a>. <br/>Build using Next.js, Semantic UI &amp; Firestore.</p>
       </Container>
     </>
