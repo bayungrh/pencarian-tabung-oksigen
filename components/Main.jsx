@@ -142,10 +142,8 @@ const MainComponent = (_) => {
           )}
 
           { stores && stores.length > 0 && stores.map((store) => {
-            let district;
-            if (kotaSource.length > 0) {
-              district = kotaSource.find((k) => k.value == store.city_id);
-            } else if (provinsiSource.length > 0) {
+            let district = kotaSource.find((k) => k.value == store.city_id);
+            if (!district) {
               district = provinsiSource.find((k) => k.value == store.province_id);
             }
 
