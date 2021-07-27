@@ -23,16 +23,18 @@ const categorySource = [
   {type: 'pembelian', value: 'pembelian', text: 'Pembelian'},
 ];
 
+const baseURI = process.env.NODE_ENV === 'production' ? 'https://info-tabung-oksigen.vercel.app' : 'http://localhost:5000';
+
 const MainComponent = (_) => {
-  const [loading, setLoading] = useState(false);
-  const [notFound, setNotFound] = useState(false);
-  const [provinsiSource, setProvinsiData] = useState([]);
-  const [kotaSource, setKotaData] = useState([]);
   const defaultSelectedData = {
     key: 0,
     value: 0,
     text: '--- Semua ---'
   }
+  const [loading, setLoading] = useState(false);
+  const [notFound, setNotFound] = useState(false);
+  const [provinsiSource, setProvinsiData] = useState([]);
+  const [kotaSource, setKotaData] = useState([]);
   const [provinsi, setProvinsi] = useState(defaultSelectedData);
   const [kota, setKota] = useState(defaultSelectedData);
   const [category, setCategory] = useState({
@@ -43,14 +45,14 @@ const MainComponent = (_) => {
   const [stores, setStores] = useState([]);
 
   const fetchProvinsi = async () => {
-    await rp.get('https://rawcdn.githack.com/ibnux/data-indonesia/d63f1cf40b8f044212696bb90855068f249674d9/propinsi.json', {
+    await rp.get('http://www.emsifa.com/api-wilayah-indonesia/api/provinces.json', {
       json: true
     }).then((res) => {
       if (res && res.length > 0) {
         const dataProvinsi = res.map((i) => ({
           key: i.id,
           value: parseInt(i.id),
-          text: i.nama
+          text: i.name
         }));
         dataProvinsi.unshift(defaultSelectedData);
         setProvinsiData(dataProvinsi);
@@ -59,13 +61,13 @@ const MainComponent = (_) => {
   }
 
   const fetchKota = async (provinceId) => {
-    await rp.get(`https://rawcdn.githack.com/ibnux/data-indonesia/d63f1cf40b8f044212696bb90855068f249674d9/kabupaten/${provinceId}.json`, {
+    await rp.get(`http://www.emsifa.com/api-wilayah-indonesia/api/regencies/${provinceId}.json`, {
       json: true
     }).then((res) => {
       const dataKota = res.map((i) => ({
         key: i.id,
         value: parseInt(i.id),
-        text: i.nama
+        text: i.name
       }));
       dataKota.unshift(defaultSelectedData);
       setKotaData(dataKota);
@@ -73,7 +75,6 @@ const MainComponent = (_) => {
   }
 
   const fetchStore = async () => {
-    const baseURI = process.env.NODE_ENV === 'production' ? 'https://info-tabung-oksigen.vercel.app' : 'http://localhost:5000';
     setLoading(true);
     setNotFound(false);
     await rp.get(`${baseURI}/api/filter?provinsi=${provinsi.value}&kota=${kota.value}&category=${category.value}`, {
@@ -152,7 +153,7 @@ const MainComponent = (_) => {
               { key: district.text, content: district.text, link: true }
             ]
             return (
-              <Card>
+              <Card key={store.id}>
                 <Card.Content>
                   <Card.Header style={{ paddingBottom: '5px' }}> { store.store_name }</Card.Header>
                   <Breadcrumb divider='/' sections={sections} />
@@ -176,9 +177,9 @@ const MainComponent = (_) => {
                   </div>
                 </Card.Content>
                 <Segment>
-                  { store.categories && store.categories.map((category) => {
+                  { store.categories && store.categories.map((category, i) => {
                     return (
-                      <Label as='a'>
+                      <Label as='a' key={i}>
                         { category }
                       </Label>
                     )
