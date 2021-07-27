@@ -45,7 +45,7 @@ const MainComponent = (_) => {
   const [stores, setStores] = useState([]);
 
   const fetchProvinsi = async () => {
-    await rp.get('http://www.emsifa.com/api-wilayah-indonesia/api/provinces.json', {
+    await rp.get(`${baseURI}/api/province`, {
       json: true
     }).then((res) => {
       if (res && res.length > 0) {
@@ -61,7 +61,7 @@ const MainComponent = (_) => {
   }
 
   const fetchKota = async (provinceId) => {
-    await rp.get(`http://www.emsifa.com/api-wilayah-indonesia/api/regencies/${provinceId}.json`, {
+    await rp.get(`${baseURI}/api/regencies?province_id=${provinceId}`, {
       json: true
     }).then((res) => {
       const dataKota = res.map((i) => ({
